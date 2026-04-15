@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f1117" />
+  <title>Fantastic Journey · VCloud Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#4f8ef7" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M2 17l10 5 10-5" stroke="#a259f7" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M2 12l10 5 10-5" stroke="#29d6a8" stroke-width="2" stroke-linejoin="round"/>
+      </svg>
+      Fantastic Journey
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <span style="font-size:0.72rem;color:var(--muted)">API</span>
+      <div class="health-dot" title="API health"></div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <button class="tab-btn active" data-tab="tab-dashboard">📊 Dashboard</button>
+    <button class="tab-btn" data-tab="tab-vclouds">☁️ VClouds</button>
+    <button class="tab-btn" data-tab="tab-vms">🖥️ VMachines</button>
+    <button class="tab-btn" data-tab="tab-vcpus">⚙️ VCPUs</button>
+    <button class="tab-btn" data-tab="tab-api">📡 API</button>
+  </nav>
+
+  <main>
+
+    <!-- ── Dashboard ── -->
+    <div id="tab-dashboard" class="tab-panel active">
+      <div class="summary-grid" style="margin-top:0.25rem;">
+        <div class="summary-card c-cloud">
+          <div class="num" id="count-clouds">–</div>
+          <div class="label">VClouds</div>
+        </div>
+        <div class="summary-card c-vm">
+          <div class="num" id="count-vms">–</div>
+          <div class="label">VMachines</div>
+        </div>
+        <div class="summary-card c-cpu">
+          <div class="num" id="count-cpus">–</div>
+          <div class="label">VCPUs</div>
+        </div>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin-bottom:1rem;">
+        <h2 style="font-size:0.9rem;margin-bottom:0.5rem;color:var(--accent)">Welcome to Fantastic Journey</h2>
+        <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;">
+          Manage your <strong style="color:var(--text)">Virtual Clouds</strong>,
+          <strong style="color:var(--text)">Virtual Machines</strong>, and
+          <strong style="color:var(--text)">Virtual CPUs</strong> from any device.
+          Use the tabs above to view and control your resources. Access the REST API from the <em>API</em> tab.
+        </p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;">
+        <h2 style="font-size:0.85rem;margin-bottom:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Quick Actions</h2>
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="document.querySelector('[data-tab=tab-vclouds]').click();openModal('modal-vcloud')">+ New VCloud</button>
+          <button class="btn-primary" style="background:var(--accent2)" onclick="document.querySelector('[data-tab=tab-vms]').click();openModal('modal-vm')">+ New VMachine</button>
+          <button class="btn-primary" style="background:var(--accent3);color:#0f1117" onclick="document.querySelector('[data-tab=tab-vcpus]').click();openModal('modal-vcpu')">+ New VCPU</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VClouds ── -->
+    <div id="tab-vclouds" class="tab-panel">
+      <div class="section-header">
+        <h2>☁️ Virtual Clouds</h2>
+        <button class="btn-primary" onclick="openModal('modal-vcloud')">+ Add VCloud</button>
+      </div>
+      <div class="resource-list" id="vcloud-list"></div>
+    </div>
+
+    <!-- ── VMachines ── -->
+    <div id="tab-vms" class="tab-panel">
+      <div class="section-header">
+        <h2>🖥️ Virtual Machines</h2>
+        <button class="btn-primary" style="background:var(--accent2)" onclick="openModal('modal-vm')">+ Add VMachine</button>
+      </div>
+      <div class="resource-list" id="vm-list"></div>
+    </div>
+
+    <!-- ── VCPUs ── -->
+    <div id="tab-vcpus" class="tab-panel">
+      <div class="section-header">
+        <h2>⚙️ Virtual CPUs</h2>
+        <button class="btn-primary" style="background:var(--accent3);color:#0f1117" onclick="openModal('modal-vcpu')">+ Add VCPU</button>
+      </div>
+      <div class="resource-list" id="vcpu-list"></div>
+    </div>
+
+    <!-- ── API Reference ── -->
+    <div id="tab-api" class="tab-panel">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:1rem;font-size:0.82rem;color:var(--muted);line-height:1.6;">
+        Base URL: <code style="color:var(--accent);background:rgba(79,142,247,0.1);padding:0.1rem 0.4rem;border-radius:4px;">/api</code>
+        &nbsp;·&nbsp; All bodies: <code style="color:var(--accent3);background:rgba(41,214,168,0.1);padding:0.1rem 0.4rem;border-radius:4px;">application/json</code>
+      </div>
+
+      <div class="api-section">
+        <h3>☁️ VClouds</h3>
+        <div class="endpoint-list">
+          <div class="endpoint"><span class="method get">GET</span> /api/vclouds</div>
+          <div class="endpoint"><span class="method get">GET</span> /api/vclouds/:id</div>
+          <div class="endpoint"><span class="method post">POST</span> /api/vclouds</div>
+          <div class="endpoint"><span class="method patch">PATCH</span> /api/vclouds/:id/toggle</div>
+          <div class="endpoint"><span class="method delete">DELETE</span> /api/vclouds/:id</div>
+        </div>
+      </div>
+
+      <div class="api-section">
+        <h3>🖥️ VMachines</h3>
+        <div class="endpoint-list">
+          <div class="endpoint"><span class="method get">GET</span> /api/vmachines</div>
+          <div class="endpoint"><span class="method get">GET</span> /api/vmachines/:id</div>
+          <div class="endpoint"><span class="method post">POST</span> /api/vmachines</div>
+          <div class="endpoint"><span class="method patch">PATCH</span> /api/vmachines/:id/toggle</div>
+          <div class="endpoint"><span class="method delete">DELETE</span> /api/vmachines/:id</div>
+        </div>
+      </div>
+
+      <div class="api-section">
+        <h3>⚙️ VCPUs</h3>
+        <div class="endpoint-list">
+          <div class="endpoint"><span class="method get">GET</span> /api/vcpus</div>
+          <div class="endpoint"><span class="method get">GET</span> /api/vcpus/:id</div>
+          <div class="endpoint"><span class="method post">POST</span> /api/vcpus</div>
+          <div class="endpoint"><span class="method patch">PATCH</span> /api/vcpus/:id/toggle</div>
+          <div class="endpoint"><span class="method delete">DELETE</span> /api/vcpus/:id</div>
+        </div>
+      </div>
+
+      <div class="api-section">
+        <h3>🩺 Health</h3>
+        <div class="endpoint-list">
+          <div class="endpoint"><span class="method get">GET</span> /api/health</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── Modals ── -->
+
+  <!-- VCloud Modal -->
+  <div class="modal-overlay" id="modal-vcloud">
+    <div class="modal">
+      <h3>☁️ New VCloud</h3>
+      <form id="form-vcloud">
+        <div class="form-group">
+          <label>Name *</label>
+          <input name="name" placeholder="VCloud-Name" required />
+        </div>
+        <div class="form-group">
+          <label>Region *</label>
+          <select name="region">
+            <option value="us-east-1">us-east-1</option>
+            <option value="us-west-2">us-west-2</option>
+            <option value="eu-west-1">eu-west-1</option>
+            <option value="eu-central-1">eu-central-1</option>
+            <option value="ap-southeast-1">ap-southeast-1</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>CPU cores</label>
+          <input name="cpu" type="number" min="1" placeholder="4" />
+        </div>
+        <div class="form-group">
+          <label>Memory (GB)</label>
+          <input name="memoryGB" type="number" min="1" placeholder="8" />
+        </div>
+        <div class="form-group">
+          <label>Storage (GB)</label>
+          <input name="storageGB" type="number" min="1" placeholder="100" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal('modal-vcloud')">Cancel</button>
+          <button type="submit" class="btn-primary">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VMachine Modal -->
+  <div class="modal-overlay" id="modal-vm">
+    <div class="modal">
+      <h3>🖥️ New VMachine</h3>
+      <form id="form-vm">
+        <div class="form-group">
+          <label>Name *</label>
+          <input name="name" placeholder="VM-Name" required />
+        </div>
+        <div class="form-group">
+          <label>Operating System *</label>
+          <select name="os">
+            <option value="Ubuntu 22.04">Ubuntu 22.04</option>
+            <option value="Ubuntu 20.04">Ubuntu 20.04</option>
+            <option value="Debian 12">Debian 12</option>
+            <option value="Fedora 39">Fedora 39</option>
+            <option value="CentOS Stream 9">CentOS Stream 9</option>
+            <option value="Windows Server 2022">Windows Server 2022</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>vCPUs</label>
+          <input name="vcpus" type="number" min="1" placeholder="2" />
+        </div>
+        <div class="form-group">
+          <label>Memory (GB)</label>
+          <input name="memoryGB" type="number" min="1" placeholder="4" />
+        </div>
+        <div class="form-group">
+          <label>Storage (GB)</label>
+          <input name="storageGB" type="number" min="1" placeholder="40" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal('modal-vm')">Cancel</button>
+          <button type="submit" class="btn-primary" style="background:var(--accent2)">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VCPU Modal -->
+  <div class="modal-overlay" id="modal-vcpu">
+    <div class="modal">
+      <h3>⚙️ New VCPU</h3>
+      <form id="form-vcpu">
+        <div class="form-group">
+          <label>Name *</label>
+          <input name="name" placeholder="VCPU-Name" required />
+        </div>
+        <div class="form-group">
+          <label>Cores *</label>
+          <input name="cores" type="number" min="1" placeholder="4" required />
+        </div>
+        <div class="form-group">
+          <label>Threads</label>
+          <input name="threads" type="number" min="1" placeholder="8" />
+        </div>
+        <div class="form-group">
+          <label>Clock Speed (GHz)</label>
+          <input name="clockGHz" type="number" step="0.1" min="0.1" placeholder="3.2" />
+        </div>
+        <div class="form-group">
+          <label>Architecture</label>
+          <select name="architecture">
+            <option value="x86_64">x86_64</option>
+            <option value="arm64">arm64</option>
+            <option value="riscv64">riscv64</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal('modal-vcpu')">Cancel</button>
+          <button type="submit" class="btn-primary" style="background:var(--accent3);color:#0f1117">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
